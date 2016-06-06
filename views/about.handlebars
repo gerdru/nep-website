@@ -1,0 +1,14 @@
+{{#section 'head'}}
+<div><img id='hoppe' src='/img/Demokratie Hoppe.jpg'></div>
+{{/section}}
+<h1>About the Natural Elite Project</h1>
+<a href="/contact">google</a>
+<p>Your fortune for the day:</p>
+<blockquote>{{fortune}}</blockquote>
+{{#section 'jquery'}}
+<script>
+$(document).ready(function() {
+	$('blockquote').after($('#hoppe'));
+});
+</script>
+{{/section}}
