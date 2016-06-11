@@ -11,16 +11,17 @@ var handlebars = require('express-handlebars')
 			}
 		}
 	});
-
+var bodyParser = require('body-parser');
+var credentials = require('./credentials')
 var app = express();
 
 app.engine('handlebars', handlebars.engine);
-
 app.set('view engine', 'handlebars');
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 
 var port = app.get('port');
+
 
 // testing functionality
 app.use(function(req, res, next) {
@@ -64,6 +65,12 @@ app.use(function(req, res, next) {
 	res.locals.partials.weatherContext = getWeatherData();
 	next();
 });
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+var jsonParser = bodyParser.json();
+
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')());
 
 // routes
 app.get('/', function(req, res) {
@@ -110,8 +117,25 @@ app.get('/data/nursery-rhyme', function(req, res) {
 	})
 })
 
-app.get('/jquery-test', function (req, res) {
+app.get('/jquery-test', function(req, res) {
 	res.render('jquery-test');
+});
+
+app.get('/newsletter', function(req, res) {
+	res.render('newsletter', {
+		csrf: 'CSRF token goes here'
+	});
+});
+
+
+app.post('/process', function(req, res){
+	if(req.xhr || req.accepts('json,html')==='json'){
+	// if there were an error, we would send { error: 'error description' }
+		res.send({ success: true });
+	} else {
+// if there were an error, we would redirect to an error page
+	res.redirect(303, '/thank-you');
+	}
 });
 
 // 404 catch-all handler (middleware)
